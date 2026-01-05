@@ -44,6 +44,32 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "RPG Attributes")
 	virtual float GetMaxExperience() const;
 	
+	/* Try to activate all gameplay abilities that match tag. */
+	UFUNCTION(BlueprintCallable, Category = "RPG Abilities")
+	bool ActivateAbilitiesWithTag(FGameplayTagContainer AbilityTags, bool AllowRemoveActivation = true);
+	
+	/* Called when health is changed 
+	 * negative delta value for decrease, positive for increase
+	 */
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHealthChange(float DeltaValue, AActor* Causer);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnStaminaChange(float DeltaValue, AActor* Causer);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAdrenalineChange(float DeltaValue, AActor* Causer);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnXPChange(float DeltaValue);
+	
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnCharacterLeveledUp();
+	
+	/* Called when character runs out of health*/
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDead();
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -55,11 +81,22 @@ protected:
 	URPGAttributeSet* AttributeSet;
 	
 	/* The level of the character. It should not be changed directly once character is spawned! */
-	UPROPERTY(EditAnywhere, Category = "RPG Abilities")
+	UPROPERTY(EditAnywhere, Category = "RPG Attributes")
 	int32 CharacterLevel;
 	
 	UPROPERTY(EditDefaultsOnly, Category = "RPG Attributes")
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffects;
+	
+	
+	/* Set this to true if you want to add test abilities to the character's ability system component. */
+	UPROPERTY(EditAnywhere, Category = "RPG Attributes | Debug")
+	bool EnableTestAbilities;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "RPG Attributes | Debug")
+	TArray<TSubclassOf<UGameplayAbility>> TestAbilities;
+	
+	virtual void SetTestAbilities();
+	
 
 public:	
 	// Called every frame
@@ -72,5 +109,18 @@ public:
 	
 	//Inherited via IAbilitySystemInterface
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
+	
+	virtual void HandleHealthChange(float DeltaValue, AActor* Causer);
+	
+	virtual void HandleStaminaChange(float DeltaValue, AActor* Causer);
+	
+	virtual void HandleAdrenalineChange(float DeltaValue, AActor* Causer);
+	
+	virtual void HandleExperienceChange(float DeltaValue);
+	
+	virtual void HandleCharacterLevelUp();
+	
+	virtual void ApplyDefaultAttributeEffects();
+	
+	virtual void RemoveDefaultAttributeEffects();
 };

@@ -3,6 +3,9 @@
 
 #include "GAS/RPGAttributeSet.h"
 #include "Net/UnrealNetwork.h"
+#include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
+#include "RPGCharacter.h"
 
 URPGAttributeSet::URPGAttributeSet()
 {
@@ -28,11 +31,101 @@ void URPGAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 void URPGAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetMaxHealthAttribute())
+	{
+		AdjustAttributeForMaxChange(Health, MaxHealth, NewValue, GetHealthAttribute());
+	}
+	
+	if (Attribute == GetMaxStaminaAttribute())
+	{
+		AdjustAttributeForMaxChange(Stamina, MaxStamina, NewValue, GetStaminaAttribute());
+	}
+	
+	if (Attribute == GetMaxAdrenalineAttribute())
+	{
+		AdjustAttributeForMaxChange(Adrenaline, MaxAdrenaline, NewValue, GetAdrenalineAttribute());
+	}
+
+	if (Attribute == GetMaxExperienceAttribute())
+	{
+		SetExperience(0.f);
+	}
+	
 }
 
 void URPGAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+	
+	float DeltaValue = 0;
+	if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Additive)
+	{
+		DeltaValue = Data.EvaluatedData.Magnitude;
+	}
+	
+	AActor* TargetActor = nullptr;
+	ARPGCharacter* RPGCharacter = nullptr;
+	
+	if (Data.Target.AbilityActorInfo.IsValid() && Data.Target.AbilityActorInfo->AvatarActor.IsValid())
+	{
+		TargetActor = Data.Target.AbilityActorInfo->AvatarActor.Get();
+		RPGCharacter = Cast<ARPGCharacter>(TargetActor);
+	}
+
+	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.f, GetMaxHealth()));
+		if (RPGCharacter)
+		{
+			RPGCharacter->HandleHealthChange(DeltaValue, Data.EffectSpec.GetContext().GetInstigator());
+		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetStaminaAttribute())
+	{
+		SetStamina(FMath::Clamp(GetStamina(), 0.f, GetMaxStamina()));
+		if (RPGCharacter)
+		{
+			RPGCharacter->HandleStaminaChange(DeltaValue, Data.EffectSpec.GetContext().GetInstigator());
+		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetAdrenalineAttribute())
+	{
+		SetAdrenaline(FMath::Clamp(GetAdrenaline(), 0.f, GetMaxAdrenaline()));
+		if (RPGCharacter)
+		{
+			RPGCharacter->HandleAdrenalineChange(DeltaValue, Data.EffectSpec.GetContext().GetInstigator());
+		}
+	}
+
+	if (Data.EvaluatedData.Attribute == GetExperienceAttribute())
+	{
+		float Difference = GetExperience() - GetMaxExperience();
+		if (RPGCharacter)
+		{
+			RPGCharacter->HandleExperienceChange(DeltaValue);
+			if (Difference >= 0)
+			{
+				RPGCharacter->HandleCharacterLevelUp();
+			}
+		}
+	}
+}
+
+void URPGAttributeSet::AdjustAttributeForMaxChange(const FGameplayAttributeData& AffectedAttribute,
+	const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty) const
+{
+	UAbilitySystemComponent* AbilitySystemComponent = GetOwningAbilitySystemComponent();
+	const float CurrentMaxValue = MaxAttribute.GetCurrentValue();
+
+	if (!FMath::IsNearlyEqual(CurrentMaxValue, NewMaxValue) && AbilitySystemComponent)
+	{
+		
+		AbilitySystemComponent->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Override, NewMaxValue);
+	}
+	
 }
 
 void URPGAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth) const

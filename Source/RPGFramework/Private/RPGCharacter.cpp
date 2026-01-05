@@ -17,7 +17,9 @@ ARPGCharacter::ARPGCharacter()
 	//Initialize Attributes
 	AttributeSet = CreateDefaultSubobject<URPGAttributeSet>(FName("AttributeSet"));
 	
-
+	//Set default character level
+	CharacterLevel = 1;
+	
 }
 
 int32 ARPGCharacter::GetCharacterLevel() const
@@ -97,11 +99,35 @@ float ARPGCharacter::GetMaxExperience() const
 	return AttributeSet->GetMaxExperience();
 }
 
+bool ARPGCharacter::ActivateAbilitiesWithTag(FGameplayTagContainer AbilityTags, bool AllowRemoveActivation)
+{
+	if (!AbilitySystemComponent)
+	{
+		return false;
+	}
+	return AbilitySystemComponent->TryActivateAbilitiesByTag(AbilityTags, AllowRemoveActivation);
+}
+
 // Called when the game starts or when spawned
 void ARPGCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ARPGCharacter::SetTestAbilities()
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		for (TSubclassOf<UGameplayAbility>& TestAbility : TestAbilities)
+		{
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(TestAbility, GetCharacterLevel(), INDEX_NONE, this));
+		}
+	}
 }
 
 // Called every frame
@@ -125,7 +151,56 @@ void ARPGCharacter::PossessedBy(AController* NewController)
 	{
 		return;
 	}
+	if (EnableTestAbilities)
+	{
+		SetTestAbilities();
+	}
 	
+	ApplyDefaultAttributeEffects();
+	
+}
+
+UAbilitySystemComponent* ARPGCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ARPGCharacter::HandleHealthChange(float DeltaValue, AActor* Causer)
+{
+	OnHealthChange(DeltaValue, Causer);
+	if (GetHealth() <= 0.f)
+	{
+		OnDead();
+	}
+}
+
+void ARPGCharacter::HandleStaminaChange(float DeltaValue, AActor* Causer)
+{
+	OnStaminaChange(DeltaValue, Causer);
+	
+}
+
+void ARPGCharacter::HandleAdrenalineChange(float DeltaValue, AActor* Causer)
+{
+	OnAdrenalineChange(DeltaValue, Causer);
+}
+
+void ARPGCharacter::HandleExperienceChange(float DeltaValue)
+{
+	OnXPChange(DeltaValue);
+	
+}
+
+void ARPGCharacter::HandleCharacterLevelUp()
+{
+	CharacterLevel += 1;
+	RemoveDefaultAttributeEffects();
+	ApplyDefaultAttributeEffects();
+	OnCharacterLeveledUp();
+}
+
+void ARPGCharacter::ApplyDefaultAttributeEffects()
+{
 	FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 	EffectContext.AddSourceObject(this);
 	FGameplayEffectSpecHandle NewHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffects, CharacterLevel, EffectContext);
@@ -136,8 +211,10 @@ void ARPGCharacter::PossessedBy(AController* NewController)
 	}
 }
 
-UAbilitySystemComponent* ARPGCharacter::GetAbilitySystemComponent() const
+void ARPGCharacter::RemoveDefaultAttributeEffects()
 {
-	return AbilitySystemComponent;
+	FGameplayEffectQuery Query;
+	Query.EffectSource = this;
+	AbilitySystemComponent->RemoveActiveEffects(Query);
 }
 

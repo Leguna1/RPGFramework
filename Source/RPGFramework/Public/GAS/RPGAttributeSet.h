@@ -60,6 +60,10 @@ public:
 	ATTRIBUTE_ACCESSORS(URPGAttributeSet, MaxExperience)
 
 protected:
+	
+	UFUNCTION()
+	void AdjustAttributeForMaxChange(const FGameplayAttributeData& AffectedAttribute, const FGameplayAttributeData& MaxAttribute, float NewMaxValue, const FGameplayAttribute& AffectedAttributeProperty) const;
+	
 	UFUNCTION()
 	void OnRep_Health(const FGameplayAttributeData& OldHealth) const;
 
