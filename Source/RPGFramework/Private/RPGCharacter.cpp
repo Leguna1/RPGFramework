@@ -4,6 +4,7 @@
 #include "GAS/RPGAbilitySystemComponent.h"
 
 
+
 // Sets default values
 ARPGCharacter::ARPGCharacter()
 {
@@ -214,6 +215,8 @@ void ARPGCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 void ARPGCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+	TeamId = FGenericTeamId(Faction);
+	
 	if (!AbilitySystemComponent)
 	{
 		return;
@@ -288,4 +291,10 @@ void ARPGCharacter::RemoveDefaultAttributeEffects()
 	Query.EffectSource = this;
 	AbilitySystemComponent->RemoveActiveEffects(Query);
 }
-
+void ARPGCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
+	}
+}

@@ -10,7 +10,8 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 				"Engine",
-				"GameplayAbilities"
+				"GameplayAbilities",
+				"AIModule"
 			]
 		}
 	],
@@ -24,6 +25,22 @@
 		},
 		{
 			"Name": "GameplayAbilities",
+			"Enabled": true
+		},
+		{
+			"Name": "Chooser",
+			"Enabled": true
+		},
+		{
+			"Name": "AnimationWarping",
+			"Enabled": true
+		},
+		{
+			"Name": "PoseSearch",
+			"Enabled": true
+		},
+		{
+			"Name": "MotionWarping",
 			"Enabled": true
 		}
 	]

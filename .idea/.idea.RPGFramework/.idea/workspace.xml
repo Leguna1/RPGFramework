@@ -11,18 +11,39 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="eb995ef1-36a5-4214-b905-0ac928f434e7" name="Changes" comment="" />
+    <list default="true" id="eb995ef1-36a5-4214-b905-0ac928f434e7" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultGameplayTags.ini" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Animations/SwordAndShield/ComboAttack_SwordAndShield2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Animations/SwordAndShield/ComboAttack_SwordAndShield2.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Abilities/GA_WithMontage.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Abilities/GA_WithMontage.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Abilities/Melee/GA_SwordAndShield_Attack.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Abilities/Melee/GA_SwordAndShield_Attack.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_CharacterBase.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_CharacterBase.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_Player.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_Player.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Blueprints/Interfaces/BPI_Warrior.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/Interfaces/BPI_Warrior.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Weapon_Pack/Blueprints/BP_Sword.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Weapon_Pack/Blueprints/BP_Sword.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/RPGFramework/Private/RPGCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/RPGFramework/Private/RPGCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/RPGFramework/Public/RPGCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/RPGFramework/Public/RPGCharacter.h" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="DpaMonitoringSettings">
+    <option name="firstShow" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="McpProjectServerCommands">
+    <commands />
+    <urls />
+  </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="Toolset" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 3
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 3
+}</component>
   <component name="ProjectId" id="37oO0mBZPiAxl1xKuA02ZhPZJkU" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -30,15 +51,19 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "C/C++ Project.RPGFramework.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "SolutionBuilderGeneralOptionsPage",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
@@ -125,7 +150,10 @@
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
-      <deployment type="dockerfile" />
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
   </component>
@@ -137,6 +165,7 @@
       <option name="presentableId" value="Default" />
       <updated>1767565738384</updated>
       <workItem from="1767565739604" duration="1559000" />
+      <workItem from="1767650509627" duration="1178000" />
     </task>
     <servers />
   </component>

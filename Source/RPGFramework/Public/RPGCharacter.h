@@ -3,13 +3,23 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
+#include "GameplayTagAssetInterface.h"
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "GAS/RPGAttributeSet.h"
 #include "RPGCharacter.generated.h"
 
+UENUM(BlueprintType)
+enum EFaction : int
+{
+	Light = 0,
+	Dark = 1, 
+	Neutral = 255
+};
+
 UCLASS()
-class RPGFRAMEWORK_API ARPGCharacter : public ACharacter, public IAbilitySystemInterface
+class RPGFRAMEWORK_API ARPGCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -117,6 +127,11 @@ protected:
 	FGameplayAbilitySpecHandle MeleeAbilitySpecHandle;
 	
 	virtual void SetMeleeAbility();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Team")
+	TEnumAsByte<EFaction> Faction = EFaction::Neutral;
+	
+	FGenericTeamId TeamId;
 
 public:	
 	// Called every frame
@@ -143,4 +158,9 @@ public:
 	virtual void ApplyDefaultAttributeEffects();
 	
 	virtual void RemoveDefaultAttributeEffects();
+	
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	
+	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; }
+	
 };
