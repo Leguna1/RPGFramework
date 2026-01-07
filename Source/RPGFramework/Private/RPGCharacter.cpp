@@ -167,6 +167,39 @@ bool ARPGCharacter::CanApplyGameplayEffect(TSubclassOf<UGameplayEffect> Gameplay
 	return AbilitySystemComponent->CanApplyAttributeModifiers(GameplayEffect->GetDefaultObject<UGameplayEffect>(), CharacterLevel, EffectContext);
 }
 
+bool ARPGCharacter::EquipWeapon(ARPGWeapon* Weapon, TEnumAsByte<EWeaponSlot> EquipSlot)
+{
+	if (!Weapon)
+	{
+		return false;
+	}
+	switch (EquipSlot)
+	{
+	case EWeaponSlot::RightHand:
+		EquipRightHand(Weapon);
+		break;
+	case EWeaponSlot::LeftHand:
+		EquipLeftHand(Weapon);
+		break;
+	default:
+		break;
+		
+	}
+	
+	return true;
+}
+
+bool ARPGCharacter::ActivateAbilityBySlot(TEnumAsByte<EAbilitySlot> AbilitySlot, bool AllowRemoteActivation)
+{
+	if (!AbilitySystemComponent || !SlotAbilityHandles.Contains(AbilitySlot))
+	{
+		return false;
+	}
+	
+	FGameplayAbilitySpecHandle* SpecHandle = SlotAbilityHandles.Find(AbilitySlot);
+	return AbilitySystemComponent->TryActivateAbility(FGameplayAbilitySpecHandle(*SpecHandle), AllowRemoteActivation);
+}
+
 // Called when the game starts or when spawned
 void ARPGCharacter::BeginPlay()
 {
@@ -297,4 +330,53 @@ void ARPGCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) co
 	{
 		AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
 	}
+}
+
+void ARPGCharacter::ClearAbilitySlot(TEnumAsByte<EAbilitySlot> AbilitySlot)
+{
+	if (SlotAbilityHandles.IsEmpty())
+	{
+		return;
+	}
+	if (SlotAbilityHandles.Contains(AbilitySlot))
+	{
+		FGameplayAbilitySpecHandle* SpecHandle = SlotAbilityHandles.Find(AbilitySlot);
+		AbilitySystemComponent->ClearAbility(*SpecHandle);
+		SlotAbilityHandles.Remove(AbilitySlot);
+	}
+}
+
+void ARPGCharacter::AddAbilityToSlot(TSubclassOf<UGameplayAbility> NewAbility, TEnumAsByte<EAbilitySlot> AbilitySlot)
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+	FGameplayAbilitySpecHandle SpecHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(NewAbility, GetCharacterLevel(), INDEX_NONE, this));
+	if (SpecHandle.IsValid())
+	{
+		SlotAbilityHandles.Add(AbilitySlot, SpecHandle);
+	}
+}
+
+void ARPGCharacter::EquipRightHand(ARPGWeapon* Weapon)
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+	ClearAbilitySlot(EAbilitySlot::LightAttack);
+	ClearAbilitySlot(EAbilitySlot::HeavyAttack);
+	AddAbilityToSlot(Weapon->LightAttackAbility, EAbilitySlot::LightAttack);
+	AddAbilityToSlot(Weapon->HeavyAttackAbility, EAbilitySlot::HeavyAttack);
+}
+
+void ARPGCharacter::EquipLeftHand(ARPGWeapon* Weapon)
+{
+	if (!AbilitySystemComponent)
+	{
+		return;
+	}
+	ClearAbilitySlot(EAbilitySlot::SecondaryAbility);
+	AddAbilityToSlot(Weapon->SecondaryAbility, EAbilitySlot::SecondaryAbility);
 }

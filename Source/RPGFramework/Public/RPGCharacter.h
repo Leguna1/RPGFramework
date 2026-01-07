@@ -8,6 +8,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameFramework/Character.h"
 #include "GAS/RPGAttributeSet.h"
+#include "RPGWeapon.h"
 #include "RPGCharacter.generated.h"
 
 UENUM(BlueprintType)
@@ -16,6 +17,20 @@ enum EFaction : int
 	Light = 0,
 	Dark = 1, 
 	Neutral = 255
+};
+UENUM(BlueprintType)
+enum EAbilitySlot : int
+{
+	LightAttack,
+	HeavyAttack,
+	SecondaryAbility
+};
+
+UENUM(BlueprintType)
+enum EWeaponSlot : int
+{
+	RightHand,
+	LeftHand
 };
 
 UCLASS()
@@ -80,7 +95,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDead();
 	
-	UFUNCTION(BlueprintCallable, Category = "RPG Abilities | Melee")
+	UFUNCTION(BlueprintCallable, Category = "RPG Abilities | Melee", meta = (DeprecatedFunction, DeprecatedMessage = "Use ActivateAbilityBySlot instead."))
 	bool ActivateMeleeAbility(bool AllowRemoteActivation = true);
 	
 	UFUNCTION(BlueprintCallable, Category = "RPG Abilities")
@@ -91,6 +106,13 @@ public:
 	
 	UFUNCTION(BlueprintCallable, Category = "RPG Abilities")
 	virtual bool CanApplyGameplayEffect(TSubclassOf<UGameplayEffect> GameplayEffect);
+	
+	UFUNCTION(BlueprintCallable, Category = "RPG Abilities")
+	virtual bool EquipWeapon(ARPGWeapon* Weapon, TEnumAsByte<EWeaponSlot> EquipSlot);
+	
+	UFUNCTION(BlueprintCallable, Category = "RPG Abilities")
+	virtual bool ActivateAbilityBySlot(TEnumAsByte<EAbilitySlot> AbilitySlot, bool AllowRemoteActivation = true);
+	
 	
 	
 protected:
@@ -132,6 +154,8 @@ protected:
 	TEnumAsByte<EFaction> Faction = EFaction::Neutral;
 	
 	FGenericTeamId TeamId;
+	
+	TMap<TEnumAsByte<EAbilitySlot>, FGameplayAbilitySpecHandle> SlotAbilityHandles;
 
 public:	
 	// Called every frame
@@ -162,5 +186,14 @@ public:
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	
 	virtual FGenericTeamId GetGenericTeamId() const override { return TeamId; }
+	
+protected:
+	virtual void ClearAbilitySlot(TEnumAsByte<EAbilitySlot> AbilitySlot);
+	
+	virtual void AddAbilityToSlot(TSubclassOf<UGameplayAbility> NewAbility, TEnumAsByte<EAbilitySlot> AbilitySlot);
+	
+	virtual void EquipRightHand(ARPGWeapon* Weapon);
+	
+	virtual void EquipLeftHand(ARPGWeapon* Weapon);
 	
 };
